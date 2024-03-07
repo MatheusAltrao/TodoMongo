@@ -13,19 +13,7 @@ router.get('/', async (req, res) => {
 
 //recuperando uma tarefa deletada
 router.get('/:id', async (req, res) => {
-    const taskId = req.params.id
-    const task = await TaskModel.findById(taskId)
-
-    try {
-
-        if (!task) {
-            return res.status(500).send('Tarefa não encontrada')
-        }
-
-        res.status(200).send(task)
-    } catch (error) {
-        res.status(500).send(error.message)
-    }
+    return new TaskController(req, res).getTasksById()
 })
 
 //vamos usar a request para enviar os dados para o banco e salvando
