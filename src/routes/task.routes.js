@@ -1,19 +1,14 @@
 const express = require('express')
 const router = express.Router()
 
+
+const TaskController = require('../controllers/task.controller')
 const TaskModel = require('../models/task.model')
 
 
 //async pois para buscar algo do banco pode demorar um tempo
 router.get('/', async (req, res) => {
-    //listando todas as tarefas
-    try {
-        const tasks = await TaskModel.find({})
-        res.status(200).send(tasks)
-    } catch (error) {
-        console.log(error)
-        res.status(500).send(error.message)
-    }
+    return new TaskController(req, res).getTasks()
 })
 
 //recuperando uma tarefa deletada
