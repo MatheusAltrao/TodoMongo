@@ -23,6 +23,24 @@ app.get('/tasks', async (req, res) => {
     }
 })
 
+
+//recuperando uma tarefa deletada
+app.get('/tasks/:id', async (req, res) => {
+    const taskId = req.params.id
+    const task = await TaskModel.findById(taskId)
+
+    try {
+
+        if (!task) {
+            return res.status(500).send('Tarefa não encontrada')
+        }
+
+        res.status(200).send(task)
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+})
+
 //vamos usar a request para enviar os dados para o banco e salvando
 app.post('/tasks', async (req, res) => {
     try {
@@ -42,7 +60,7 @@ app.delete('/tasks/:id', async (req, res) => {
         const taskToDelete = await TaskModel.findById(taskId)
 
         if (!taskToDelete) {
-            return req.status(500).send('Essa tarefa não foi encontrada')
+            return req.status(404).send('Essa tarefa não foi encontrada')
         }
 
         const deletedTask = await TaskModel.findByIdAndDelete(taskId)
