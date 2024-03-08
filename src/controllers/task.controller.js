@@ -1,5 +1,6 @@
+const mongoose = require('mongoose');
 const { notAllowedFieldsToUpdate } = require('../errors/general.errors')
-const { notFoundError } = require('../errors/mongodb.erros')
+const { notFoundError, objectIdCastError } = require('../errors/mongodb.erros')
 const TaskModel = require('../models/task.model')
 
 class TaskController {
@@ -20,18 +21,23 @@ class TaskController {
     }
 
     async getTasksById() {
-        const taskId = this.req.params.id
-        const task = await TaskModel.findById(taskId)
 
         try {
+            const taskId = this.req.params.id;
+            const task = await TaskModel.findById(taskId); // Mover para dentro do try
+
             if (!task) {
-                return notFoundError(this.res)
+                return notFoundError(this.res);
             }
-            this.res.status(200).send(task)
+            this.res.status(200).send(task);
         } catch (error) {
-            this.res.status(500).send(error.message)
+            if (error instanceof mongoose.Error.CastError) {
+                return objectIdCastError(this.res);
+            }
+            this.res.status(500).send(error.message);
         }
     }
+
 
     async createTask() {
         try {
@@ -72,6 +78,10 @@ class TaskController {
 
             return this.res.status(200).send(taskToUpdate)
         } catch (error) {
+
+            if (error instanceof mongoose.Error.CastError) {
+                return objectIdCastError(this.res);
+            }
             return this.res.status(500).send(error.message)
         }
     }
@@ -89,6 +99,10 @@ class TaskController {
 
             this.res.status(200).send(deletedTask)
         } catch (error) {
+
+            if (error instanceof mongoose.Error.CastError) {
+                return objectIdCastError(this.res);
+            }
             this.res.status(500).send(error.message)
         }
     }
