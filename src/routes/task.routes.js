@@ -3,8 +3,6 @@ const router = express.Router()
 
 
 const TaskController = require('../controllers/task.controller')
-const TaskModel = require('../models/task.model')
-
 
 //async pois para buscar algo do banco pode demorar um tempo
 router.get('/', async (req, res) => {

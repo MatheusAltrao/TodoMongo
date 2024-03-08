@@ -1,3 +1,4 @@
+const { notFoundError } = require('../errors/mongodb.erros')
 const TaskModel = require('../models/task.model')
 
 class TaskController {
@@ -23,7 +24,7 @@ class TaskController {
 
         try {
             if (!task) {
-                return this.res.status(500).send('Tarefa não encontrada')
+                return notFoundError(this.res)
             }
             this.res.status(200).send(task)
         } catch (error) {
@@ -47,6 +48,10 @@ class TaskController {
             const tasksData = this.req.body
 
             const taskToUpdate = await TaskModel.findById(taskId)
+
+            if (!taskToUpdate) {
+                return notFoundError(this.res)
+            }
 
             const allowedUpdates = ['isCompleted'] // campo q pode ser atualizado
             const requestUpdates = Object.keys(tasksData) //pegando os campos q estão vindo do body em json
@@ -76,7 +81,7 @@ class TaskController {
             const taskToDelete = await TaskModel.findById(taskId)
 
             if (!taskToDelete) {
-                return this.req.status(404).send('Essa tarefa não foi encontrada')
+                return notFoundError(this.res)
             }
 
             const deletedTask = await TaskModel.findByIdAndDelete(taskId)
